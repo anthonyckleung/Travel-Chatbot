@@ -1,2 +1,8 @@
 chatbot/
 prototype/
+model/
+parser/
+ner/
+vocab/
+tagger/
+*.pkl
