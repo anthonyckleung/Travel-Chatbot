@@ -1,0 +1,5 @@
+slackclient==2.5.0
+slackeventsapi==2.1.0
+fastai==1.0.60
+spacy==2.1.9
+

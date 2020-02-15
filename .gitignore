@@ -1,8 +1,9 @@
 chatbot/
 prototype/
-model/
+models/
 parser/
 ner/
 vocab/
 tagger/
+__pycache__/
 *.pkl
