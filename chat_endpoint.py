@@ -19,6 +19,21 @@ slack_events_adapter = SlackEventAdapter(slack_signing_secret, "/slack/events")
 slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
 slack_client = WebClient(slack_bot_token)
 
+####===== spaCy ====####
+# Load spaCy object
+nlp = spacy.load('en_core_web_sm')
+# Create Matcher object for phrase matching
+matcher = Matcher(nlp.vocab)
+
+####===== Define Patterns for SpaCy Phrase Matching ====####
+# Starting pattern
+matcher.add("START_LOC", None, pattern_start)
+
+# Destination pattern
+matcher.add("END_LOC", None, pattern_end)
+
+
+
 ####===== Process chat responses =====#####
 chat_df = pd.read_csv('travel_chat.csv')
 chat_df['response'] =  chat_df['response'].apply(lambda x: x.strip('[]')
@@ -39,24 +54,39 @@ clas_learn.load(trained_model)
 clas_learn.load_encoder(encoder)
 
 
-temp = clas_learn.predict('Hi there')
+#temp = clas_learn.predict('Hi there')
 
-class_predict = str(temp[0])
-print(class_predict)
-print(random.choice(response_dict[class_predict]))
+#class_predict = str(temp[0])
+#print(class_predict)
+#print(random.choice(response_dict[class_predict]))
+
+def ner_doc(doc):
+  col_names = ['text',  'label']
+  sent_df = pd.DataFrame(columns=col_names)
+  for ent in doc.ents:
+    temp = pd.DataFrame([[ent.text, ent.label_]], columns=col_names)
+    sent_df = pd.concat([sent_df, temp], ignore_index=True)
+  return sent_df 
+
+
+
+
 
 # Example responder to greetings
 @slack_events_adapter.on("message")
 def handle_message(event_data):
     message = event_data["event"]
-    # If the incoming message contains "hi", then respond with a "Hello" message
-    if message.get("subtype") is None and "hi" in message.get('text'):
-        channel = message["channel"]
-        print(channel)
-        #message = "Hello <@%s>! :tada:" % message["user"]
-        message = random.choice(response_dict[class_predict])
-        #slack_client.api_call("chat.postMessage", channel=channel, text=message)
-        slack_client.chat_postMessage(channel=channel,
-                                      text=message)
+    #print(event_data) 
+    #If the incoming message is not from the bot, then respond. 
+    if message['user'] != 'UU1PNRKUG':
+       msg = message.get('text')
+       pred = clas_learn.predict(msg)
+       msg_intent = str(pred[0])
+       channel = message['channel']
+       resp = random.choice(response_dict[msg_intent])
+       slack_client.chat_postMessage(channel=channel,
+                                  text=resp)
+                               
 
-slack_events_adapter.start(port=3000)
+if __name__=="__main__":
+    slack_events_adapter.start(port=3000)
