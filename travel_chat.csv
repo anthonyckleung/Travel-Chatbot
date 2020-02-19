@@ -96,67 +96,68 @@ context,response,text,label
 [''],"['I can provide you with flights and hotel information', 'I can help you look up information on flight and or hotels prices based on the date and location you provide to me']",What do you do?,options
 [''],"['I can provide you with flights and hotel information', 'I can help you look up information on flight and or hotels prices based on the date and location you provide to me']",What is it that you do here?,options
 [''],"['I can provide you with flights and hotel information', 'I can help you look up information on flight and or hotels prices based on the date and location you provide to me']",What is the meaning of your existence?,options
-[''],[''],one way flight prices to Athens,SearchOneWayFlight
-[''],[''],one-way flight to Santa Clara,SearchOneWayFlight
-[''],[''],How much is a one-way ticket from Montreal to Tokyo if I leave on March 5 and return on March 10?,SearchOneWayFlight
-[''],[''],looking for one way ticket to taipei,SearchOneWayFlight
-[''],[''],how much is one way flight to Seoul?,SearchOneWayFlight
-[''],[''],what is the price of one way flight to taipei?,SearchOneWayFlight
-[''],[''],what is the price of a direct one-way flight to Detroit?,SearchOneWayFlight
-[''],[''],need one way flight to Paris,SearchOneWayFlight
-[''],[''],looking for direct one-way flight to london,SearchOneWayFlight
-[''],[''],What is the price of a one-way ticket from Dubai to Paris if I leave on May 24?,SearchOneWayFlight
-[''],[''],Tell me about one way flights from Frankfurt to London?,SearchOneWayFlight
-[''],[''],One way from London to Toronto?,SearchOneWayFlight
-[''],[''],One way from Dubai to London,SearchOneWayFlight
-[''],[''],One way trip from Frankfurt to Paris?,SearchOneWayFlight
-[''],[''],Going to Shanghai,SearchOneWayFlight
-[''],[''],Want to go to Seoul,SearchOneWayFlight
-[''],[''],One way to Jakarta,SearchOneWayFlight
-[''],[''],One way to Hanoi from Hong Kong,SearchOneWayFlight
-[''],[''],One-way flight to Dubai,SearchOneWayFlight
-[''],[''],Is there a one way trip to Bordeaux?,SearchOneWayFlight
-[''],[''],Can I info for one-way trip from Dublin to Porto?,SearchOneWayFlight
-[''],[''],Want to go to Madrid,SearchOneWayFlight
-[''],[''],"From Madrid to Vienna, one-way flight",SearchOneWayFlight
-[''],[''],Find me the price for one way trip from Hanover to Basel,SearchOneWayFlight
-[''],[''],Searching for one-way from Hanover to Toronto,SearchOneWayFlight
-[''],[''],Give me the price for a trip from Hanover to Basel,SearchOneWayFlight
-[''],[''],Are there flights from London to Madrid?,SearchOneWayFlight
-[''],[''],Looking for one-way flight from London to Hong Kong,SearchOneWayFlight
-[''],[''],One-way flight to Edinburgh,SearchOneWayFlight
-[''],[''],Looking for one way flights between Toronto and London,SearchOneWayFlight
-[''],[''],Help search one way flight from London to Hong Kong,SearchOneWayFlight
-[''],[''],One way trip from Athens to Frankfurt.,SearchOneWayFlight
-[''],[''],What is the price of a round trip from Toronto to New York City if I leave on Feb 2 and coming back on Feb 5?,SearchRoundTripFlight
-[''],[''],search for round trip to Hong Kong,SearchRoundTripFlight
-[''],[''],i will need a roundtrip flight to San Jose,SearchRoundTripFlight
-[''],[''],need a roundtrip ticket to Hawaii,SearchRoundTripFlight
-[''],[''],looking for round trip flight to London,SearchRoundTripFlight
-[''],[''],i need a roundtrip info between vancouver and toronto,SearchRoundTripFlight
-[''],[''],Round trip from Montreal to Vancouver?,SearchRoundTripFlight
-[''],[''],Round-trip from Toronto to San Francisco,SearchRoundTripFlight
-[''],[''],Price for roundtrip from Toronto to New York City if I leave on Feb 2 and coming back on Feb 5?,SearchRoundTripFlight
-[''],[''],Round trip from Montreal to Vancouver?,SearchRoundTripFlight
-[''],[''],Price for trip from San Jose to New York City leaving on Feb 2 and returning on Feb 5?,SearchRoundTripFlight
-[''],[''],Flight from San Jose to New York City leaving on Feb 2 and returning on Feb 5?,SearchRoundTripFlight
-[''],[''],Roundtrip flight between San Jose and New York City leaving on Feb 2 and returning on Feb 5?,SearchRoundTripFlight
-[''],[''],Price for roundtrip flight going from Toronto to Hong Kong leaving on Feb 2 and returning on Feb 25?,SearchRoundTripFlight
-[''],[''],Round trip flight between Arizona and New Jersey leaving on May 6 and returning on May 10?,SearchRoundTripFlight
-[''],[''],Round-trip from Toronto to San Francisco,SearchRoundTripFlight
-[''],[''],"Osaka to Toronto, leaving Dec 1 and returning on Jan 12",SearchRoundTripFlight
-[''],[''],Shanghai to Toronto round trip,SearchRoundTripFlight
-[''],[''],I want to know the roundtrip price between Turin and Moscow,SearchRoundTripFlight
-[''],[''],What is the price for roundtrip going from Toronto to Shanghai?,SearchRoundTripFlight
-[''],[''],"roundtrip from San Francisco to Toronto, leaving Oct 24 returning on Nov 30",SearchRoundTripFlight
-[''],[''],looking for round-trip info for Baltimore and San Francisco,SearchRoundTripFlight
-[''],[''],I am looking a roundtrip price for flights between Hong Kong and Seoul,SearchRoundTripFlight
-[''],[''],Find me roundtrip price between Toronto and Hong Kong between Jan 14 and Feb 28,SearchRoundTripFlight
-[''],[''],Roundtrip tickets from Toronto to Vancourver,SearchRoundTripFlight
-[''],[''],Looking for roundtrip from Ottawa to Detroit,SearchRoundTripFlight
-[''],[''],Help with look for round trip prices from Paris to London.,SearchRoundTripFlight
-[''],[''],Looking for roundtrip price from Paris to Monaco,SearchRoundTripFlight
-[''],[''],Help me look for round trip flight from Detroit to Las Vegas,SearchRoundTripFlight
+[''],[''],one way flight prices to Athens,SearchFlight
+[''],[''],one-way flight to Santa Clara,SearchFlight
+[''],[''],How much is a one-way ticket from Montreal to Tokyo if I leave on March 5 and return on March 10?,SearchFlight
+[''],[''],looking for one way ticket to taipei,SearchFlight
+[''],[''],how much is one way flight to Seoul?,SearchFlight
+[''],[''],what is the price of one way flight to taipei?,SearchFlight
+[''],[''],what is the price of a direct one-way flight to Detroit?,SearchFlight
+[''],[''],need one way flight to Paris,SearchFlight
+[''],[''],looking for direct one-way flight to london,SearchFlight
+[''],[''],What is the price of a one-way ticket from Dubai to Paris if I leave on May 24?,SearchFlight
+[''],[''],Tell me about one way flights from Frankfurt to London?,SearchFlight
+[''],[''],One way from London to Toronto?,SearchFlight
+[''],[''],One way from Dubai to London,SearchFlight
+[''],[''],One way trip from Frankfurt to Paris?,SearchFlight
+[''],[''],Going to Shanghai,SearchFlight
+[''],[''],Want to go to Seoul,SearchFlight
+[''],[''],One way to Jakarta,SearchFlight
+[''],[''],One way to Hanoi from Hong Kong,SearchFlight
+[''],[''],One-way flight to Dubai,SearchFlight
+[''],[''],Is there a one way trip to Bordeaux?,SearchFlight
+[''],[''],Can I info for one-way trip from Dublin to Porto?,SearchFlight
+[''],[''],Want to go to Madrid,SearchFlight
+[''],[''],"From Madrid to Vienna, one-way flight",SearchFlight
+[''],[''],Find me the price for one way trip from Hanover to Basel,SearchFlight
+[''],[''],Searching for one-way from Hanover to Toronto,SearchFlight
+[''],[''],Give me the price for a trip from Hanover to Basel,SearchFlight
+[''],[''],Are there flights from London to Madrid?,SearchFlight
+[''],[''],Looking for one-way flight from London to Hong Kong,SearchFlight
+[''],[''],One-way flight to Edinburgh,SearchFlight
+[''],[''],Looking for one way flights between Toronto and London,SearchFlight
+[''],[''],Help search one way flight from London to Hong Kong,SearchFlight
+[''],[''],One way trip from Athens to Frankfurt.,SearchFlight
+[''],[''],What is the price of a round trip from Toronto to New York City if I leave on Feb 2 and coming back on Feb 5?,SearchFlight
+[''],[''],search for round trip to Hong Kong,SearchFlight
+[''],[''],i will need a roundtrip flight to San Jose,SearchFlight
+[''],[''],need a roundtrip ticket to Hawaii,SearchFlight
+[''],[''],looking for round trip flight to London,SearchFlight
+[''],[''],i need a roundtrip info between vancouver and toronto,SearchFlight
+[''],[''],Round trip from Montreal to Vancouver?,SearchFlight
+[''],[''],Round-trip from Toronto to San Francisco,SearchFlight
+[''],[''],Price for roundtrip from Toronto to New York City if I leave on Feb 2 and coming back on Feb 5?,SearchFlight
+[''],[''],Round trip from Montreal to Vancouver?,SearchFlight
+[''],[''],Price for trip from San Jose to New York City leaving on Feb 2 and returning on Feb 5?,SearchFlight
+[''],[''],Flight from San Jose to New York City leaving on Feb 2 and returning on Feb 5?,SearchFlight
+[''],[''],Roundtrip flight between San Jose and New York City leaving on Feb 2 and returning on Feb 5?,SearchFlight
+[''],[''],Price for roundtrip flight going from Toronto to Hong Kong leaving on Feb 2 and returning on Feb 25?,SearchFlight
+[''],[''],Round trip flight between Arizona and New Jersey leaving on May 6 and returning on May 10?,SearchFlight
+[''],[''],Round-trip from Toronto to San Francisco,SearchFlight
+[''],[''],"Osaka to Toronto, leaving Dec 1 and returning on Jan 12",SearchFlight
+[''],[''],Shanghai to Toronto round trip,SearchFlight
+[''],[''],I want to know the roundtrip price between Turin and Moscow,SearchFlight
+[''],[''],What is the price for roundtrip going from Toronto to Shanghai?,SearchFlight
+[''],[''],"roundtrip from San Francisco to Toronto, leaving Oct 24 returning on Nov 30",SearchFlight
+[''],[''],looking for round-trip info for Baltimore and San Francisco,SearchFlight
+[''],[''],I am looking a roundtrip price for flights between Hong Kong and Seoul,SearchFlight
+[''],[''],Find me roundtrip price between Toronto and Hong Kong between Jan 14 and Feb 28,SearchFlight
+[''],[''],Roundtrip tickets from Toronto to Vancourver,SearchFlight
+[''],[''],Looking for roundtrip from Ottawa to Detroit,SearchFlight
+[''],[''],Help with look for round trip prices from Paris to London.,SearchFlight
+[''],[''],Looking for roundtrip price from Paris to Monaco,SearchFlight
+[''],[''],Help me look for round trip flight from Detroit to Las Vegas,SearchFlight
+[''],[''],Want to know price of round trip from Ottawa to Calgary,SearchFlight
 [''],[''],What hotels are available in Boston on Feb 2?,SearchHotelPrice
 [''],[''],any hotels in Johannesburg?,SearchHotelPrice
 [''],[''],looking for hotels in Houston,SearchHotelPrice
@@ -196,38 +197,3 @@ context,response,text,label
 [''],[''],"Going on a trip to Dubai, what are some hotels there?",SearchHotelPrice
 [''],[''],Need to look for hotels in Osaka,SearchHotelPrice
 [''],[''],Help me look for hotels in Paris,SearchHotelPrice
-[''],[''],What rental cars are available in Boston airport on Feb 12?,SearchCarRentalPrice
-[''],[''],need to book a car rental in London,SearchCarRentalPrice
-[''],[''],I will need to rent a car in Arizona,SearchCarRentalPrice
-[''],[''],I want to rent a car in Vancouver,SearchCarRentalPrice
-[''],[''],i will need a car in detroit,SearchCarRentalPrice
-[''],[''],i will need to rent a car is Las Vegas,SearchCarRentalPrice
-[''],[''],I need a car to rent in Tokyo,SearchCarRentalPrice
-[''],[''],I want to see some available car rentals in Vancouver on June 15,SearchCarRentalPrice
-[''],[''],Could you tell me some cars that are available to rent in Las Vegas on Dec. 20?,SearchCarRentalPrice
-[''],[''],Car rentals in San Francisco that are available on that day?,SearchCarRentalPrice
-[''],[''],Tell me about car rentals in Detroit city that are available on July 21?,SearchCarRentalPrice
-[''],[''],Cars available in Toronto?,SearchCarRentalPrice
-[''],[''],Car rentals in Detroit?,SearchCarRentalPrice
-[''],[''],Available cars in JFK?,SearchCarRentalPrice
-[''],[''],Cars in YYZ?,SearchCarRentalPrice
-[''],[''],Rental cars in St. Jose?,SearchCarRentalPrice
-[''],[''],"Can I rent cars in Kyoto, Japan?",SearchCarRentalPrice
-[''],[''],Car I can rent in Ottawa?,SearchCarRentalPrice
-[''],[''],What cars can I rent in London?,SearchCarRentalPrice
-[''],[''],Cars I can rent in Houston?,SearchCarRentalPrice
-[''],[''],Available cars in Bangkok?,SearchCarRentalPrice
-[''],[''],Car rentals in Los Angeles?,SearchCarRentalPrice
-[''],[''],What cars can I rent in Toronto?,SearchCarRentalPrice
-[''],[''],Car rentals in Toronto?,SearchCarRentalPrice
-[''],[''],Available vehicle rentals in San Jose?,SearchCarRentalPrice
-[''],[''],San Francisco car rentals?,SearchCarRentalPrice
-[''],[''],What cars can I rent in Beijing airport?,SearchCarRentalPrice
-[''],[''],Tell me availabile car rentals in Winnipeg?,SearchCarRentalPrice
-[''],[''],Edmonton car rentals,SearchCarRentalPrice
-[''],[''],What cars can I rent in London?,SearchCarRentalPrice
-[''],[''],Are there available car to rent in Vienna?,SearchCarRentalPrice
-[''],[''],Can I rent cars in Belfast?,SearchCarRentalPrice
-[''],[''],What cars are available for rental in Miami?,SearchCarRentalPrice
-[''],[''],"I'm going on a trip to Memphis, are there cars to rent?",SearchCarRentalPrice
-[''],[''],"Will be leaving on a trip to London, give me a list of rental cars",SearchCarRentalPrice

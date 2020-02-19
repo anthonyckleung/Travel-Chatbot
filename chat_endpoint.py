@@ -3,7 +3,10 @@ from fastai.text import *
 from fastai.callbacks import *
 import random 
 import pandas as pd
-
+import json
+import dateparser
+import spacy
+import response
 from spacy.pipeline import EntityRuler
 from spacy.matcher import Matcher
 
@@ -19,17 +22,27 @@ slack_events_adapter = SlackEventAdapter(slack_signing_secret, "/slack/events")
 slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
 slack_client = WebClient(slack_bot_token)
 
+####==== SKYSCANNER ====####
+sky_url = os.environ["SKYSCAN_URL"]
+rapid_host = os.environ["RAPID_HOST"]
+rapid_key = os.environ["RAPID_KEY"]
+
 ####===== spaCy ====####
 # Load spaCy object
-nlp = spacy.load('en_core_web_sm')
+nlp = spacy.load("en_core_web_sm")
 # Create Matcher object for phrase matching
 matcher = Matcher(nlp.vocab)
 
-####===== Define Patterns for SpaCy Phrase Matching ====####
-# Starting pattern
-matcher.add("START_LOC", None, pattern_start)
+# Starting location
+pattern_start = [{'LOWER': 'from', },
+             {'ENT_TYPE': 'GPE'},
+            ]
 
-# Destination pattern
+# Ending/Destination location
+pattern_end = [{'LOWER': 'to'},
+             {'ENT_TYPE': 'GPE'}]
+
+matcher.add("START_LOC", None, pattern_start)
 matcher.add("END_LOC", None, pattern_end)
 
 
@@ -39,6 +52,12 @@ chat_df = pd.read_csv('travel_chat.csv')
 chat_df['response'] =  chat_df['response'].apply(lambda x: x.strip('[]')
                                           .replace("'","").split(', '))
 response_dict = dict(zip(chat_df['label'], chat_df['response'].tolist()))
+
+####===== Load and process Airport codes ====#####
+fields = ['Name', 'City', 'IATA']
+airport_df = pd.read_csv('airports.csv', usecols=fields)
+
+air_int_df = airport_df[airport_df['Name'].apply(lambda x: 'International' in x)]
 
 #print(response_dict)
 
@@ -60,17 +79,137 @@ clas_learn.load_encoder(encoder)
 #print(class_predict)
 #print(random.choice(response_dict[class_predict]))
 
+
+####==== HELPER METHODS ====####
 def ner_doc(doc):
-  col_names = ['text',  'label']
-  sent_df = pd.DataFrame(columns=col_names)
-  for ent in doc.ents:
-    temp = pd.DataFrame([[ent.text, ent.label_]], columns=col_names)
-    sent_df = pd.concat([sent_df, temp], ignore_index=True)
-  return sent_df 
+    '''
+    takes an spacy doc object and makes a ner 
+    and returns a dataframe of entities.
+    '''
+    col_names = ['text',  'label']
+    sent_df = pd.DataFrame(columns=col_names)
+    for ent in doc.ents:
+        temp = pd.DataFrame([[ent.text, ent.label_]], columns=col_names)
+        sent_df = pd.concat([sent_df, temp], ignore_index=True)
+    return sent_df 
 
 
+def loc_matcher(doc):
+    '''
+    Takes a spacy doc object and find  
+    matching patterns on origin and destination
+    locations. Returns results as a dataframe.
+    '''
+    #match_id, start and stop indexes of the matched words
+    matches = matcher(doc)
+    col_names = ['pattern', 'text', 'location']
+    match_result = pd.DataFrame(columns=col_names)
+
+    #Find all matched results and extract out the results
+    for match_id, start, end in matches:
+        # Get the string representation 
+        string_id = nlp.vocab.strings[match_id]  
+        span = doc[start:end]  # The matched span
+        loc = doc[end-1]
+        temp = pd.DataFrame([[string_id, span.text, loc]], columns=col_names)
+        match_result = pd.concat([match_result, temp], ignore_index=True)
+        #print(string_id, start, end, span.text)
+    return match_result
+
+def travel_api_get(ner_df, match_df):
+    # Extract all relevant entities
+    #depart_date = ner_df.loc[ner_df['label'] == 'DATE', 'text'].iloc[0]
+    origin_loc = match_df.loc[match_df['pattern']=='START_LOC', 'location'].iloc[0].text
+    dest_loc = match_df.loc[match_df['pattern']=='END_LOC', 'location'].iloc[0].text
+
+    # Map location to airport code
+    origin_code = air_int_df[air_int_df['City'] == origin_loc]['IATA'].iloc[0]
+    dest_code = air_int_df[air_int_df['City'] == dest_loc]['IATA'].iloc[0]
+
+    #print(origin_code)
+    #print(dest_code)
+
+    depart_date = None
+    return_date = None
+    date_df = ner_df[ner_df['label'] == 'DATE']
+    n_date = len(date_df)
+    if (n_date == 2):
+      date_df = date_df.sort_values(by=['text'])
+      depart_date = date_df['text'].iloc[0]
+      return_date = date_df['text'].iloc[1]
+      #print(depart_date)
+      #print(return_date)
+      depart_date = dateparser.parse(depart_date).strftime('%Y-%m-%d')
+      return_date = dateparser.parse(return_date).strftime('%Y-%m-%d')
+    else:
+      depart_date = date_df['text'].iloc[0]
+      depart_date = dateparser.parse(depart_date).strftime('%Y-%m-%d')
+
+    URL = sky_url 
+    country = 'CA'
+    currency = 'CAD'
+    locale = 'en-US'
+    originPlace = origin_code
+    destinationPlace = dest_code
+    outboundPartialDate = depart_date
+
+    URL_complete = f'{URL}/{country}/{currency}/{locale}/{originPlace}/{destinationPlace}/{outboundPartialDate}'
+    #print(URL_complete)
+
+    headers = {
+    'x-rapidapi-host': rapid_host,
+    'x-rapidapi-key': rapid_key 
+    }
+    true = True
+    false = False
+    if return_date != None:
+      inboundPartialDate = return_date
+      URL_complete = URL_complete + f'/{inboundPartialDate}'
+      #querystring = {'inboundpartialdate':return_date}
+      flight_resp = requests.request("GET", URL_complete, headers=headers)
+    else:
+      flight_resp = requests.request("GET", URL_complete, headers=headers)
+
+    return flight_resp
 
 
+def flight_response(doc):
+    # Identify relevant entities
+    ner_df = ner_doc(doc)
+
+    # Get the number of dates and locations
+    n_loc = len(ner_df[ner_df['label'] == 'GPE'])
+    n_date = len(ner_df[ner_df['label'] == 'DATE'])
+
+    #proceed = True
+    if (n_loc < 2) or (n_date ==0):
+        resp = "Sorry I don't understand. Please restate your flight request \
+with complete dates and locations."
+        return resp
+
+    #if proceed:
+    match_df = loc_matcher(doc)
+    flight_resp = travel_api_get(ner_df, match_df)
+    resp_json = json.loads(flight_resp.text)
+    quotes = resp_json['Quotes']
+    n_quotes = len(quotes)
+    if (n_quotes == 0):
+        resp = 'No flights are available with the details you provided.'
+        return resp
+    
+    price_str = ""
+    for quote in quotes:
+        price = quote['MinPrice']
+        depart_time = quote['OutboundLeg']['DepartureDate']
+        price_str += f"${price} ({depart_time}); "
+    #Extract all relevant entities
+    depart_date = ner_df.loc[ner_df['label'] == 'DATE', 'text'].iloc[0]
+    origin_loc = match_df.loc[match_df['pattern']=='START_LOC', 'location'].iloc[0]
+    dest_loc = match_df.loc[match_df['pattern']=='END_LOC', 'location'].iloc[0] 
+    resp = f'Flight tickets from {origin_loc} to {dest_loc} leaving on {depart_date}: '+price_str
+   # resp = "OK"
+    return resp 
+       
 
 # Example responder to greetings
 @slack_events_adapter.on("message")
@@ -83,10 +222,17 @@ def handle_message(event_data):
        pred = clas_learn.predict(msg)
        msg_intent = str(pred[0])
        channel = message['channel']
+       doc = nlp(msg)
        resp = random.choice(response_dict[msg_intent])
+      # resp = msg_intent 
+       if (msg_intent=='SearchFlight'):
+            resp = flight_response(doc)
+      #     resp = "OK"
+            #print(resp)              
        slack_client.chat_postMessage(channel=channel,
                                   text=resp)
                                
 
 if __name__=="__main__":
-    slack_events_adapter.start(port=3000)
+
+      slack_events_adapter.start(port=3000)
