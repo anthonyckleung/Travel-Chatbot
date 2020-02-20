@@ -42,12 +42,13 @@ pattern_start = [{'LOWER': 'from', },
 pattern_end = [{'LOWER': 'to'},
              {'ENT_TYPE': 'GPE'}]
 
+# Add patterns to matcher object
 matcher.add("START_LOC", None, pattern_start)
 matcher.add("END_LOC", None, pattern_end)
 
 
 
-####===== Process chat responses =====#####
+####===== Process chatbot responses =====#####
 chat_df = pd.read_csv('travel_chat.csv')
 chat_df['response'] =  chat_df['response'].apply(lambda x: x.strip('[]')
                                           .replace("'","").split(', '))
@@ -59,9 +60,7 @@ airport_df = pd.read_csv('airports.csv', usecols=fields)
 
 air_int_df = airport_df[airport_df['Name'].apply(lambda x: 'International' in x)]
 
-#print(response_dict)
-
-####===== Load intent classifier =====#####
+####===== Load speech intent classifier =====#####
 data_bunch = 'data_clas_export_travel_chats.pkl'
 trained_model ='travel-chat-clas-model'
 encoder = 'ft_enc'
@@ -71,13 +70,6 @@ data_clas = load_data(path, data_bunch, bs=8)
 clas_learn = text_classifier_learner(data_clas, AWD_LSTM, drop_mult=0.5)
 clas_learn.load(trained_model)
 clas_learn.load_encoder(encoder)
-
-
-#temp = clas_learn.predict('Hi there')
-
-#class_predict = str(temp[0])
-#print(class_predict)
-#print(random.choice(response_dict[class_predict]))
 
 
 ####==== HELPER METHODS ====####
@@ -144,7 +136,8 @@ def travel_api_get(ner_df, match_df):
     else:
       depart_date = date_df['text'].iloc[0]
       depart_date = dateparser.parse(depart_date).strftime('%Y-%m-%d')
-
+    
+    # Define url properties
     URL = sky_url 
     country = 'CA'
     currency = 'CAD'
@@ -154,21 +147,24 @@ def travel_api_get(ner_df, match_df):
     outboundPartialDate = depart_date
 
     URL_complete = f'{URL}/{country}/{currency}/{locale}/{originPlace}/{destinationPlace}/{outboundPartialDate}'
-    #print(URL_complete)
+    
 
     headers = {
     'x-rapidapi-host': rapid_host,
     'x-rapidapi-key': rapid_key 
     }
+    # JSON object output from the pull has 'true' and 'false' 
+    # entries in improper format. Need to set them accordingly.
     true = True
     false = False
+
+    # If there is a return date, then add inbound date into URL
     if return_date != None:
       inboundPartialDate = return_date
       URL_complete = URL_complete + f'/{inboundPartialDate}'
-      #querystring = {'inboundpartialdate':return_date}
-      flight_resp = requests.request("GET", URL_complete, headers=headers)
-    else:
-      flight_resp = requests.request("GET", URL_complete, headers=headers)
+    
+    # Pull flight info via GET request
+    flight_resp = requests.request("GET", URL_complete, headers=headers)
 
     return flight_resp
 
