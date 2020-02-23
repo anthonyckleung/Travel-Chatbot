@@ -105,21 +105,17 @@ def loc_matcher(doc):
         loc = doc[end-1]
         temp = pd.DataFrame([[string_id, span.text, loc]], columns=col_names)
         match_result = pd.concat([match_result, temp], ignore_index=True)
-        #print(string_id, start, end, span.text)
+        
     return match_result
 
 def travel_api_get(ner_df, match_df):
     # Extract all relevant entities
-    #depart_date = ner_df.loc[ner_df['label'] == 'DATE', 'text'].iloc[0]
     origin_loc = match_df.loc[match_df['pattern']=='START_LOC', 'location'].iloc[0].text
     dest_loc = match_df.loc[match_df['pattern']=='END_LOC', 'location'].iloc[0].text
 
     # Map location to airport code
     origin_code = air_int_df[air_int_df['City'] == origin_loc]['IATA'].iloc[0]
     dest_code = air_int_df[air_int_df['City'] == dest_loc]['IATA'].iloc[0]
-
-    #print(origin_code)
-    #print(dest_code)
 
     depart_date = None
     return_date = None
@@ -129,8 +125,7 @@ def travel_api_get(ner_df, match_df):
       date_df = date_df.sort_values(by=['text'])
       depart_date = date_df['text'].iloc[0]
       return_date = date_df['text'].iloc[1]
-      #print(depart_date)
-      #print(return_date)
+     
       depart_date = dateparser.parse(depart_date).strftime('%Y-%m-%d')
       return_date = dateparser.parse(return_date).strftime('%Y-%m-%d')
     else:
@@ -164,7 +159,7 @@ def travel_api_get(ner_df, match_df):
       URL_complete = URL_complete + f'/{inboundPartialDate}'
     
     # Pull flight info via GET request
-    flight_resp = requests.request("GET", URL_complete, headers=headers)
+    flight_resp = requests.request('GET', URL_complete, headers=headers)
 
     return flight_resp
 
@@ -197,7 +192,7 @@ with complete dates and locations."
     for quote in quotes:
         price = quote['MinPrice']
         depart_time = quote['OutboundLeg']['DepartureDate']
-        price_str += f"${price} ({depart_time}); "
+        price_str += f'${price} ({depart_time}); '
     #Extract all relevant entities
     depart_date = ner_df.loc[ner_df['label'] == 'DATE', 'text'].iloc[0]
     origin_loc = match_df.loc[match_df['pattern']=='START_LOC', 'location'].iloc[0]
@@ -208,9 +203,9 @@ with complete dates and locations."
        
 
 # Example responder to greetings
-@slack_events_adapter.on("message")
+@slack_events_adapter.on('message')
 def handle_message(event_data):
-    message = event_data["event"]
+    message = event_data['event']
     #print(event_data) 
     #If the incoming message is not from the bot, then respond. 
     if message['user'] != 'UU1PNRKUG':
