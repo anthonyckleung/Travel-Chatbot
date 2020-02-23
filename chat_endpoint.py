@@ -1,6 +1,11 @@
-from fastai import *
-from fastai.text import *
-from fastai.callbacks import *
+"""Travel Chat Bot on Slack
+
+title:  chat_endpoint.py
+author: Anthony Leung
+usage:  python3 chat_endpoint.py
+"""
+
+import os
 import random 
 import pandas as pd
 import json
@@ -10,9 +15,12 @@ import response
 from spacy.pipeline import EntityRuler
 from spacy.matcher import Matcher
 
+from fastai import *
+from fastai.text import *
+from fastai.callbacks import *
+
 from slackeventsapi import SlackEventAdapter
 from slack import WebClient
-import os
 
 # Our app's Slack Event Adapter for receiving actions via the Events API
 slack_signing_secret = os.environ["SLACK_SIGNING_SECRET"]
@@ -120,6 +128,7 @@ def travel_api_get(ner_df, match_df):
     origin_code = air_int_df[air_int_df['City'] == origin_loc]['IATA'].iloc[0]
     dest_code = air_int_df[air_int_df['City'] == dest_loc]['IATA'].iloc[0]
 
+    # Parse any date entities to the format 'YYYY-MM-DD'
     depart_date = None
     return_date = None
     date_df = ner_df[ner_df['label'] == 'DATE']
@@ -150,7 +159,7 @@ def travel_api_get(ner_df, match_df):
     'x-rapidapi-host': rapid_host,
     'x-rapidapi-key': rapid_key 
     }
-    # JSON object output from the pull has 'true' and 'false' 
+    # JSON object output from the GET requet has 'true' and 'false' 
     # entries in improper format. Need to set them accordingly.
     true = True
     false = False
@@ -177,34 +186,38 @@ def flight_response(doc):
     n_loc = len(ner_df[ner_df['label'] == 'GPE'])
     n_date = len(ner_df[ner_df['label'] == 'DATE'])
 
-    #proceed = True
+    # Return if there are not enough flight information.
     if (n_loc < 2) or (n_date ==0):
         resp = "Sorry I don't understand. Please restate your flight request \
 with complete dates and locations."
         return resp
 
-    #if proceed:
+    # Continue routine via GET request
     match_df = loc_matcher(doc)
     flight_resp = travel_api_get(ner_df, match_df)
     resp_json = json.loads(flight_resp.text)
+
+    # Extract all price quotes
     quotes = resp_json['Quotes']
     n_quotes = len(quotes)
     if (n_quotes == 0):
         resp = 'No flights are available with the details you provided.'
         return resp
     
+    # Concat prices into a single string.
     price_str = ""
     for quote in quotes:
         price = quote['MinPrice']
         depart_time = quote['OutboundLeg']['DepartureDate']
         price_str += f'${price} ({depart_time}); '
-    #Extract all relevant entities
+
+    #Extract all relevant flight entities
     depart_date = ner_df.loc[ner_df['label'] == 'DATE', 'text'].iloc[0]
     origin_loc = match_df.loc[match_df['pattern']=='START_LOC', 'location'].iloc[0]
     dest_loc = match_df.loc[match_df['pattern']=='END_LOC', 'location'].iloc[0] 
     resp = f'Flight tickets from {origin_loc} to {dest_loc} leaving on {depart_date}: '+price_str
-   # resp = "OK"
-    return resp 
+   
+   return resp 
        
 
 @slack_events_adapter.on('message')
@@ -213,7 +226,7 @@ def handle_message(event_data):
     Main method to handle Slack messages.
     '''
     message = event_data['event']
-    #print(event_data) 
+     
     #If the incoming message is not from the bot, then respond. 
     if message['user'] != 'UU1PNRKUG':
        msg = message.get('text')
@@ -222,11 +235,10 @@ def handle_message(event_data):
        channel = message['channel']
        doc = nlp(msg)
        resp = random.choice(response_dict[msg_intent])
-      # resp = msg_intent 
+     
        if (msg_intent=='SearchFlight'):
             resp = flight_response(doc)
-      #     resp = "OK"
-            #print(resp)              
+
        slack_client.chat_postMessage(channel=channel,
                                   text=resp)
                                
