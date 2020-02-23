@@ -109,6 +109,9 @@ def loc_matcher(doc):
     return match_result
 
 def travel_api_get(ner_df, match_df):
+    '''
+    Makes a GET request on a travel API to get flight information.
+    '''
     # Extract all relevant entities
     origin_loc = match_df.loc[match_df['pattern']=='START_LOC', 'location'].iloc[0].text
     dest_loc = match_df.loc[match_df['pattern']=='END_LOC', 'location'].iloc[0].text
@@ -143,7 +146,6 @@ def travel_api_get(ner_df, match_df):
 
     URL_complete = f'{URL}/{country}/{currency}/{locale}/{originPlace}/{destinationPlace}/{outboundPartialDate}'
     
-
     headers = {
     'x-rapidapi-host': rapid_host,
     'x-rapidapi-key': rapid_key 
@@ -165,6 +167,9 @@ def travel_api_get(ner_df, match_df):
 
 
 def flight_response(doc):
+    '''
+    Constructs a response for a flight request from the user.
+    '''
     # Identify relevant entities
     ner_df = ner_doc(doc)
 
@@ -202,9 +207,11 @@ with complete dates and locations."
     return resp 
        
 
-# Example responder to greetings
 @slack_events_adapter.on('message')
 def handle_message(event_data):
+    '''
+    Main method to handle Slack messages.
+    '''
     message = event_data['event']
     #print(event_data) 
     #If the incoming message is not from the bot, then respond. 
