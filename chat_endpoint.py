@@ -23,32 +23,35 @@ from slackeventsapi import SlackEventAdapter
 from slack import WebClient
 
 # Our app's Slack Event Adapter for receiving actions via the Events API
-slack_signing_secret = os.environ["SLACK_SIGNING_SECRET"]
-slack_events_adapter = SlackEventAdapter(slack_signing_secret, "/slack/events")
+slack_signing_secret = os.environ['SLACK_SIGNING_SECRET']
+slack_events_adapter = SlackEventAdapter(slack_signing_secret, '/slack/events')
 
 # Create a SlackClient for your bot to use for Web API requests
-slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
+slack_bot_token = os.environ['SLACK_BOT_TOKEN']
 slack_client = WebClient(slack_bot_token)
 
+slack_bot_id = os.environ['SLACK_BOT_USER_ID']
+
 ####==== SKYSCANNER ====####
-sky_url = os.environ["SKYSCAN_URL"]
-rapid_host = os.environ["RAPID_HOST"]
-rapid_key = os.environ["RAPID_KEY"]
+sky_url = os.environ['SKYSCAN_URL']
+rapid_host = os.environ['RAPID_HOST']
+rapid_key = os.environ['RAPID_KEY']
 
 ####===== spaCy ====####
 # Load spaCy object
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load('en_core_web_sm')
+
 # Create Matcher object for phrase matching
 matcher = Matcher(nlp.vocab)
 
 # Starting location
 pattern_start = [{'LOWER': 'from', },
-             {'ENT_TYPE': 'GPE'},
+            {"ENT_TYPE": "GPE", "OP": "+"},
             ]
 
 # Ending/Destination location
 pattern_end = [{'LOWER': 'to'},
-             {'ENT_TYPE': 'GPE'}]
+            {"ENT_TYPE": "GPE", "OP": "+"}]
 
 # Add patterns to matcher object
 matcher.add("START_LOC", None, pattern_start)
@@ -110,7 +113,7 @@ def loc_matcher(doc):
         # Get the string representation 
         string_id = nlp.vocab.strings[match_id]  
         span = doc[start:end]  # The matched span
-        loc = doc[end-1]
+        loc = doc[start+1:end].text
         temp = pd.DataFrame([[string_id, span.text, loc]], columns=col_names)
         match_result = pd.concat([match_result, temp], ignore_index=True)
         
@@ -121,9 +124,12 @@ def travel_api_get(ner_df, match_df):
     Makes a GET request on a travel API to get flight information.
     '''
     # Extract all relevant entities
-    origin_loc = match_df.loc[match_df['pattern']=='START_LOC', 'location'].iloc[0].text
-    dest_loc = match_df.loc[match_df['pattern']=='END_LOC', 'location'].iloc[0].text
-
+    origin_list = match_df[match_df['pattern']=='START_LOC'].loc[:,'location'].tolist()
+    dest_list = match_df[match_df['pattern']=='END_LOC'].loc[:,'location'].tolist()
+    
+    origin_loc = origin_list[-1]
+    dest_loc = dest_list[-1]
+    
     # Map location to airport code
     origin_code = air_int_df[air_int_df['City'] == origin_loc]['IATA'].iloc[0]
     dest_code = air_int_df[air_int_df['City'] == dest_loc]['IATA'].iloc[0]
@@ -213,11 +219,16 @@ with complete dates and locations."
 
     #Extract all relevant flight entities
     depart_date = ner_df.loc[ner_df['label'] == 'DATE', 'text'].iloc[0]
-    origin_loc = match_df.loc[match_df['pattern']=='START_LOC', 'location'].iloc[0]
-    dest_loc = match_df.loc[match_df['pattern']=='END_LOC', 'location'].iloc[0] 
+    
+    start_list = match_df[match_df['pattern']=='START_LOC'].loc[:,'location'].tolist()
+    dest_list = match_df[match_df['pattern']=='END_LOC'].loc[:,'location'].tolist()
+    
+    origin_loc = start_list[-1]
+    dest_loc = dest_list[-1]
+    
     resp = f'Flight tickets from {origin_loc} to {dest_loc} leaving on {depart_date}: '+price_str
-   
-   return resp 
+    
+    return resp 
        
 
 @slack_events_adapter.on('message')
@@ -228,7 +239,7 @@ def handle_message(event_data):
     message = event_data['event']
      
     #If the incoming message is not from the bot, then respond. 
-    if message['user'] != 'UU1PNRKUG':
+    if message['user'] != slack_bot_id:
        msg = message.get('text')
        pred = clas_learn.predict(msg)
        msg_intent = str(pred[0])
