@@ -2,6 +2,8 @@
 
 The purpose of this project is to build a simple chatbot where a user can request flight prices through conversation.
 
+The project was originally assigned at 1000ml - an institution for practical AI based in Toronto.
+
 ## Prerequsite
 Notebook and script are written in Python 3. The libraries used for this project are listed under the `requirements.txt` file. It is recommended to first set up a virtual environment and then install the libraries with
 
