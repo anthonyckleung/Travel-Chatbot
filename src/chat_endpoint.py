@@ -22,6 +22,9 @@ from fastai.callbacks import *
 from slackeventsapi import SlackEventAdapter
 from slack import WebClient
 
+# Change directory to parent folder
+os.chdir('../')
+
 # Our app's Slack Event Adapter for receiving actions via the Events API
 slack_signing_secret = os.environ['SLACK_SIGNING_SECRET']
 slack_events_adapter = SlackEventAdapter(slack_signing_secret, '/slack/events')
