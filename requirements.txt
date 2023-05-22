@@ -6,4 +6,4 @@ slackeventsapi==2.1.0
 fastai==1.0.60
 flat-table==1.1.0
 spacy==2.1.9
-requests==2.21.0
+requests==2.31.0
